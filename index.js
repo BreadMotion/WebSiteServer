@@ -1,8 +1,7 @@
-// index.js
 import express from "express";
 import cors from "cors";
-
 const app = express();
+const exportFunc = require("./stripe-exports");
 const PORT = process.env.PORT || 19132;
 
 // JSON ボディをパース
@@ -40,6 +39,32 @@ app.post("/contact", (req, res) => {
 
   // TODO: ここにメール送信やログ保存を足す
   return res.json({ ok: true });
+});
+
+app.post("/stripe-create-customer", function (req, res) {
+  exportFunc.stripe_create_customer(req.body.email);
+  res.send("Created a customer.\n");
+  console.log("Created a customer.");
+});
+app.post("/stripe-create-card", function (req, res) {
+  exportFunc.stripe_create_card(
+    req.body.customer_id,
+    req.body.card_num,
+    req.body.card_month,
+    req.body.card_year,
+    req.body.card_cvc,
+  );
+  res.send("Created a card.\n");
+  console.log("Created a card.");
+});
+app.post("/stripe-charge", function (req, res) {
+  exportFunc.stripe_charge(
+    req.body.price,
+    req.body.description,
+    req.body.customer_id,
+  );
+  res.send("Created a charge.\n");
+  console.log("Created a charge.");
 });
 
 // サーバ起動
